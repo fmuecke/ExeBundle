@@ -34,6 +34,18 @@ ExeBundle focuses on **packaging and distribution**.
 Execution is self-contained and follows a deterministic model.
 
 
+## What ExeBundle Is Not
+
+ExeBundle is deliberately focused. It is:
+
+- not a container runtime
+- not a sandbox or virtual machine
+- not an installer framework
+- not a mandatory obfuscation or protection layer
+
+ExeBundle operates entirely in **user mode** and relies on **standard Windows execution semantics**.
+
+
 ## Key Characteristics
 
 - **Single-file distribution**  
@@ -50,6 +62,34 @@ Execution is self-contained and follows a deterministic model.
 
 - **Focused tooling**  
   ExeBundle does not prescribe how applications are built or structured.
+
+
+## Packaging Capabilities
+
+ExeBundle can bundle:
+- executables
+- DLLs
+- scripts (e.g. PowerShell, CMD)
+- configuration files
+- assets and resource files
+
+Advanced characteristics include:
+- deterministic extraction behavior
+- optional local caching for repeated execution
+- support for different compression strategies (e.g. startup speed vs. bundle size)
+- compatibility with Authenticode-signed binaries
+
+
+## How It Works (High Level)
+
+1. You define which files and entry points should be bundled
+2. ExeBundle packages them into a single executable
+3. At runtime:
+   - the bundle is prepared locally (side-by-side or cached)
+   - integrity is verified
+   - the selected entry point is launched
+4. No global installation is performed
+5. No system state is modified unless the bundled application does so
 
 
 ## Typical Use Cases
@@ -85,16 +125,25 @@ This repository contains:
 Documentation evolves together with the releases.
 
 
+## Technology
+
+- Platform: Windows
+- Language: C++
+- No runtime dependencies
+- No kernel drivers
+- No executable rewriting at runtime
+
+
 ## Licensing & Usage
 
 ExeBundle is proprietary software.
 
-✅ Free usage is permitted for:
+Free usage is permitted for:
 - Private, non-commercial use
 - Educational use
 - Commercial evaluation and testing purposes (PoC, compatibility checks)
 
-⚠️ A **commercial license** is required for:
+A **commercial license** is required for:
 - Production use
 - Operational or revenue-generating workflows
 - Distribution to customers
