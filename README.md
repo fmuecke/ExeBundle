@@ -87,20 +87,21 @@ Documentation evolves together with the releases.
 
 ## Licensing & Usage
 
-ExeBundle is proprietary, binary-only software.
+ExeBundle is proprietary software.
 
-Free usage is permitted for:
+✅ Free usage is permitted for:
 - Private, non-commercial use
 - Educational use
 - Commercial evaluation and testing purposes (PoC, compatibility checks)
 
-A **commercial license** is required for:
+⚠️ A **commercial license** is required for:
 - Production use
 - Operational or revenue-generating workflows
 - Distribution to customers
 
 Details are described in the `LICENSE` file.  
-For commercial licensing, redistribution, or enterprise use, please contact the author.
+For commercial licensing, redistribution, or enterprise use, just contact the author.
+
 
 ## Issues & Discussions
 
