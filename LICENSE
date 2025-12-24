@@ -1,0 +1,78 @@
+ExeBundle Binary License
+Version 1.0
+
+Copyright (c) 2025 Florian Mücke
+All rights reserved.
+
+1. SCOPE
+This software ("Software") is provided in binary form only.
+The source code is not provided and remains proprietary.
+
+The Software is licensed, not sold.
+
+2. DEFINITIONS
+"Private Use" means use by a natural person for personal,
+non-commercial purposes.
+
+"Educational Use" means use by students, teachers, or educational
+institutions solely for teaching, learning, training, or academic
+research purposes.
+
+"Testing Purposes" means use of the Software solely for internal
+evaluation, testing, proof-of-concept, benchmarking, or compatibility
+assessment, without productive, operational, or revenue-generating use.
+
+"Commercial Use" means any productive, operational, or
+revenue-generating use of the Software within a company, organization,
+government entity, or as part of a customer-facing product or service.
+
+3. GRANT OF LICENSE
+Permission is hereby granted to use the Software free of charge
+for the following purposes only:
+
+a) Private Use.
+b) Educational Use.
+c) Internal use within a commercial, enterprise, or organizational
+   environment strictly for Testing Purposes.
+
+4. RESTRICTIONS
+The following uses are NOT permitted under this license:
+
+a) Commercial Use of the Software.
+b) Use of the Software as part of a production system, service,
+   pipeline, or operational workflow.
+c) Distribution of the Software to customers, third parties,
+   or external users.
+d) Redistribution, sublicensing, leasing, renting, or resale
+   of the Software.
+e) Reverse engineering, decompilation, or disassembly of the Software,
+   except where explicitly permitted by applicable law.
+
+5. COMMERCIAL LICENSING
+Any use of the Software beyond Private Use, Educational Use,
+or Testing Purposes requires a separate commercial license.
+
+Commercial licenses may be obtained by contacting the author 
+or via the project page https://github.com/fmuecke/ExeBundle
+
+6. OWNERSHIP AND INTELLECTUAL PROPERTY
+All rights, title, and interest in and to the Software,
+including all intellectual property rights,
+remain exclusively with the copyright holder.
+
+7. DISCLAIMER OF WARRANTY
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
+AND NON-INFRINGEMENT.
+
+8. LIMITATION OF LIABILITY
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+9. ACCEPTANCE
+By using the Software, you acknowledge that you have read,
+understood, and agreed to the terms of this license.
