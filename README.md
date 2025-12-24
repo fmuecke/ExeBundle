@@ -6,7 +6,6 @@ ExeBundle packages applications for distribution into **single, self-contained W
 This repository serves as the **public release, documentation, and community hub** for ExeBundle.  
 The core source code is developed and maintained in a separate private repository.
 
----
 
 ## What ExeBundle Does
 
@@ -21,7 +20,6 @@ The resulting executable can be:
 
 without relying on installers, runtimes, or additional files on the target system.
 
----
 
 ## Scope and Terminology
 
@@ -35,7 +33,6 @@ In this context, *applications* include:
 ExeBundle focuses on **packaging and distribution**.  
 Execution is self-contained and follows a deterministic model.
 
----
 
 ## Key Characteristics
 
@@ -54,7 +51,6 @@ Execution is self-contained and follows a deterministic model.
 - **Focused tooling**  
   ExeBundle does not prescribe how applications are built or structured.
 
----
 
 ## Typical Use Cases
 
@@ -65,7 +61,6 @@ Execution is self-contained and follows a deterministic model.
 - Providing portable diagnostics or helpers
 - Simplifying deployment pipelines
 
----
 
 ## Releases
 
@@ -78,7 +73,6 @@ Each release includes:
 
 The source code is not part of this repository.
 
----
 
 ## Documentation
 
@@ -90,7 +84,6 @@ This repository contains:
 
 Documentation evolves together with the releases.
 
----
 
 ## Licensing & Usage
 
@@ -101,7 +94,6 @@ Commercial usage requires a **separate license**.
 Details are described in the `LICENSE` file.  
 For commercial licensing, redistribution, or enterprise use, please contact the author.
 
----
 
 ## Issues & Discussions
 
@@ -112,7 +104,6 @@ This repository is the **public interaction point** for ExeBundle.
 
 Feature requests are welcome, but evaluated deliberately.
 
----
 
 ## Roadmap
 
@@ -124,7 +115,6 @@ Development priorities:
 
 ExeBundle intentionally avoids feature bloat.
 
----
 
 ## Status
 
