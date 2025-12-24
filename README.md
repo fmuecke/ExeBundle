@@ -3,87 +3,44 @@
 
 ExeBundle packages applications for distribution into **single, self-contained Windows executables** that run **without installers or external files**.
 
-This repository serves as the **public release, documentation, and community hub** for ExeBundle.  
-The core source code is developed and maintained in a separate private repository.
+This repository is the **public release, documentation, and community hub** for ExeBundle.  
+The core source code is developed in a separate private repository.
 
+## Core Concept
 
-## What ExeBundle Does
-
-ExeBundle creates an *executable bundle*:  
+ExeBundle creates an **executable bundle**:  
 a single `.exe` that encapsulates everything required to run an application.
-
-The resulting executable can be:
-- copied
-- distributed
-- deployed
-- executed
-
-without relying on installers, runtimes, or additional files on the target system.
-
-
-## Scope and Terminology
 
 In this context, *applications* include:
 - GUI applications
 - command-line tools
-- utilities
-- internal tools
+- utilities and internal tools
 - support or diagnostic binaries
 
-ExeBundle focuses on **packaging and distribution**.  
-Execution is self-contained and follows a deterministic model.
+ExeBundle focuses on **packaging and distribution** with **deterministic, self-contained execution**.
 
 
-## What ExeBundle Is Not
-
-ExeBundle is deliberately focused. It is:
-
-- not a container runtime
-- not a sandbox or virtual machine
-- not an installer framework
-- not a mandatory obfuscation or protection layer
-
-ExeBundle operates entirely in **user mode** and relies on **standard Windows execution semantics**.
-
-
-## Key Characteristics
-
-- **Single-file distribution**  
-  One executable represents the complete application.
-
-- **Self-contained execution**  
-  No installers, no external files, no runtime dependencies.
-
-- **Windows-first**  
-  Designed specifically for Windows environments.
-
-- **Predictable behavior**  
-  Controlled unpacking and execution.
-
-- **Focused tooling**  
-  ExeBundle does not prescribe how applications are built or structured.
-
-
-## Packaging Capabilities
+## Capabilities
 
 ExeBundle can bundle:
-- executables
-- DLLs
+- executables and DLLs
 - scripts (e.g. PowerShell, CMD)
 - configuration files
 - assets and resource files
 
-Advanced characteristics include:
-- deterministic extraction behavior
-- optional local caching for repeated execution
-- support for different compression strategies (e.g. startup speed vs. bundle size)
-- compatibility with Authenticode-signed binaries
+Key characteristics:
+- **single-file distribution**
+- **no installers or external dependencies**
+- **predictable unpacking and execution**
+- optional local caching for repeated runs
+- support for different compression strategies
+- compatible with Authenticode-signed binaries
 
 
 ## How It Works (High Level)
 
-1. You define which files and entry points should be bundled
-2. ExeBundle packages them into a single executable
+1. Define which files and entry points should be bundled
+2. ExeBundle packages everything into a single executable
 3. At runtime:
    - the bundle is prepared locally (side-by-side or cached)
    - integrity is verified
@@ -102,75 +59,43 @@ Advanced characteristics include:
 - Simplifying deployment pipelines
 
 
-## Releases
+## Releases & Documentation
 
-All public releases are published via **GitHub Releases**.
-
-Each release includes:
+All public releases are published via **GitHub Releases** and include:
 - prebuilt binaries
 - checksums
 - release notes
 
-The source code is not part of this repository.
-
-
-## Documentation
-
-This repository contains:
+This repository also contains:
 - usage instructions
 - command-line reference
 - packaging concepts
-- limitations and known constraints
+- known limitations
 
-Documentation evolves together with the releases.
+Source code is not part of this repository.
 
 
-## Technology
+## Technology, Licensing & Community
 
+**Technology**
 - Platform: Windows
 - Language: C++
 - No runtime dependencies
 - No kernel drivers
 - No executable rewriting at runtime
+- Operates entirely in **user mode** and relies on **standard Windows execution semantics**
 
 
-## Licensing & Usage
-
-ExeBundle is proprietary software.
-
-Free usage is permitted for:
-- Private, non-commercial use
-- Educational use
-- Commercial evaluation and testing purposes (PoC, compatibility checks)
-
-A **commercial license** is required for:
-- Production use
-- Operational or revenue-generating workflows
-- Distribution to customers
-
-Details are described in the [LICENSE.txt](LICENSE.txt) file.  
-For commercial licensing, redistribution, or enterprise use, just contact the author.
+**Licensing**
+- Free for private, educational or evaluation use
+- Commercial usage requires a separate license (available on request)
+- Details described in [LICENSE.txt](LICENSE.txt), [LICENSE-SUMMARY.md](LICENSE-SUMMARY.md) and [LICENSE-FAQ.md](LICENSE-FAQ.md)
 
 
-## Issues & Discussions
+**Community**
+- Use **Issues** for bugs or concrete problems
+- Use **Discussions** for questions, ideas, and feedback
 
-This repository is the **public interaction point** for ExeBundle.
-
-- Use **Issues** for bugs or concrete problems.
-- Use **Discussions** for questions, ideas, and feedback.
-
-Feature requests are welcome, but evaluated deliberately.
-
-
-## Roadmap
-
-Development priorities:
-- stability
-- predictability
-- minimalism
-- long-term maintainability
-
-ExeBundle intentionally avoids feature bloat.
 
 
 ## Status
@@ -183,4 +108,3 @@ Breaking changes are documented explicitly.
 ---
 
 © 2025 – Florian Mücke // ExeBundle
- 
