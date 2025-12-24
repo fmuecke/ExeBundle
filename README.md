@@ -99,7 +99,7 @@ ExeBundle is proprietary software.
 - Operational or revenue-generating workflows
 - Distribution to customers
 
-Details are described in the `LICENSE` file.  
+Details are described in the [LICENSE.txt](LICENSE.txt) file.  
 For commercial licensing, redistribution, or enterprise use, just contact the author.
 
 
