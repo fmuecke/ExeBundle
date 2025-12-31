@@ -2,8 +2,8 @@
 
 **Ship one executable. Nothing else.**
 
-ExeBundle is a Windows-focused tool to **package applications into a single, self-contained `.exe`**
-— no installer, no MSI, no external files.
+ExeBundle is a **Windows application bundler** that packages tools and applications into a
+**single, self-contained executable (.exe)** — **no installer**, no MSI, no external files.
 
 If your application needs more than one file to run, ExeBundle turns it into **exactly one executable**.
 
@@ -20,13 +20,16 @@ ExeBundle exists to solve **one specific problem**:
 
 > **How do I ship an application as a single executable that just runs?**
 
+This makes ExeBundle especially useful for **portable Windows tools** and
+**self-contained command-line utilities** that should run without setup.
+
 ## What ExeBundle Is (and Is Not)
 
 **ExeBundle is:**
 
-* a bundler for Windows executables
-* focused on distribution, not installation
-* deterministic and self-contained
+* a **Windows application bundler**
+* focused on **distribution**, not installation
+* produces **single-executable**, **self-contained** applications
 * suitable for tools, utilities, and internal applications
 
 **ExeBundle is not:**
@@ -40,13 +43,16 @@ ExeBundle exists to solve **one specific problem**:
 * Shipping internal tools to colleagues
 * Delivering utilities to customers
 * Providing portable diagnostics or helpers
-* Packaging applications with DLL dependencies
+* **DLL bundling** for Windows applications
 * Running tools in restricted or locked-down environments
 * Simplifying CI/CD delivery pipelines
+* Shipping **portable Windows tools** without installers
 
 If you want users to **download one file and run it**, ExeBundle fits.
 
 ## Quick Start (30 seconds)
+
+Package a **portable Windows command-line tool** into a single executable:
 
 ```text
 ExeBundle.exe build -e MyApp.exe -o MyApp-Bundled.exe -a
@@ -74,7 +80,7 @@ Result:
 
 ## What Can Be Bundled
 
-* executables and DLLs
+* Windows executables and **DLL dependencies**
 * command-line tools
 * scripts (PowerShell, CMD)
 * configuration files
@@ -82,7 +88,8 @@ Result:
 
 Key characteristics:
 
-* single-file distribution
+* **single-executable** distribution
+* **self-contained** runtime behavior
 * predictable unpacking and execution
 * optional local caching for repeated runs
 * selectable compression strategies
@@ -137,6 +144,13 @@ See:
 * **Discussions** → questions, ideas, feedback
 
 Real-world usage feedback is explicitly welcome.
+
+
+## Keywords
+
+Windows · single executable · application bundler · portable apps ·
+self-contained · no installer · DLL bundling · command-line tools
+
 
 ## Status
 
