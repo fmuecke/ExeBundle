@@ -1,16 +1,19 @@
-ExeBundle Binary License
-Version 1.0
-
-Copyright (c) 2025 Florian Mücke
+ExeBundle Binary License - Version 1.0
+Copyright (C) 2025 Florian Muecke
 All rights reserved.
 
 1. SCOPE
+
 This software ("Software") is provided in binary form only.
 The source code is not provided and remains proprietary.
 
 The Software is licensed, not sold.
 
+This license governs the use of the Software commonly referred to as
+the "Community Edition".
+
 2. DEFINITIONS
+
 "Private Use" means use by a natural person for personal,
 non-commercial purposes.
 
@@ -22,57 +25,79 @@ research purposes.
 evaluation, testing, proof-of-concept, benchmarking, or compatibility
 assessment, without productive, operational, or revenue-generating use.
 
-"Commercial Use" means any productive, operational, or
-revenue-generating use of the Software within a company, organization,
-government entity, or as part of a customer-facing product or service.
+"Commercial Use" means any use of the Software that is intended to
+generate revenue, commercial advantage, or monetary compensation,
+directly or indirectly, including use as part of paid products,
+services, or customer-facing offerings.
+
+Non-profit organizations may use the Software free of charge,
+provided that such use is strictly non-commercial and does not involve
+any form of revenue generation, paid services, or commercial advantage.
 
 3. GRANT OF LICENSE
+
 Permission is hereby granted to use the Software free of charge
 for the following purposes only:
 
 a) Private Use.
 b) Educational Use.
-c) Internal use within a commercial, enterprise, or organizational
-   environment strictly for Testing Purposes.
+c) Use for Testing Purposes, including within commercial,
+   enterprise, or organizational environments.
 
 4. RESTRICTIONS
+
 The following uses are NOT permitted under this license:
 
 a) Commercial Use of the Software.
 b) Use of the Software as part of a production system, service,
    pipeline, or operational workflow.
-c) Distribution of the Software to customers, third parties,
-   or external users.
-d) Redistribution, sublicensing, leasing, renting, or resale
-   of the Software.
-e) Reverse engineering, decompilation, or disassembly of the Software,
+c) Distribution of the Software for commercial purposes,
+   or as part of a paid product, service, or offering.
+d) Reverse engineering, decompilation, or disassembly of the Software,
    except where explicitly permitted by applicable law.
 
-5. COMMERCIAL LICENSING
+5. REDISTRIBUTION
+
+Redistribution of the unmodified Software in binary form
+is permitted free of charge, provided that:
+
+a) The redistribution is for non-commercial purposes only.
+b) No fee is charged for the Software itself.
+c) This license text is included and remains unmodified.
+d) The Software is not presented as part of a commercial product,
+   service, or offering.
+
+6. COMMERCIAL LICENSING
+
 Any use of the Software beyond Private Use, Educational Use,
 or Testing Purposes requires a separate commercial license.
 
-Commercial licenses may be obtained by contacting the author 
-or via the project page https://github.com/fmuecke/ExeBundle
+Commercial licenses may be obtained by contacting the author
+or via the project page:
+https://github.com/fmuecke/ExeBundle
 
-6. OWNERSHIP AND INTELLECTUAL PROPERTY
+7. OWNERSHIP AND INTELLECTUAL PROPERTY
+
 All rights, title, and interest in and to the Software,
 including all intellectual property rights,
 remain exclusively with the copyright holder.
 
-7. DISCLAIMER OF WARRANTY
+8. DISCLAIMER OF WARRANTY
+
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
 OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
 AND NON-INFRINGEMENT.
 
-8. LIMITATION OF LIABILITY
+9. LIMITATION OF LIABILITY
+
 IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
 FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-9. ACCEPTANCE
+10. ACCEPTANCE
+
 By using the Software, you acknowledge that you have read,
 understood, and agreed to the terms of this license.

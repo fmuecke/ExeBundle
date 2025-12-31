@@ -39,12 +39,12 @@ Key characteristics:
 
 ## How It Works (High Level)
 
-1. Define which files and entry points should be bundled
+1. Define which files and main executable should be bundled
 2. ExeBundle packages everything into a single executable
 3. At runtime:
-   - the bundle is prepared locally (side-by-side or cached)
+   - the bundle is extracted locally (cached, subdir, or temporary)
    - integrity is verified
-   - the selected entry point is launched
+   - the main executable is launched
 4. No global installation is performed
 5. No system state is modified unless the bundled application does so
 
@@ -87,7 +87,7 @@ Source code is not part of this repository.
 
 
 **Licensing**
-- Free for private, educational or evaluation use
+- Free for non-commercial use only
 - Commercial usage requires a separate license (available on request)
 - Details described in [LICENSE.txt](LICENSE.txt), [LICENSE-SUMMARY.md](LICENSE-SUMMARY.md) and [LICENSE-FAQ.md](LICENSE-FAQ.md)
 
