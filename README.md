@@ -102,12 +102,11 @@ All public releases are published via **GitHub Releases** and include:
 * checksums
 * release notes
 
-This repository contains:
+### Documentation
 
-* usage instructions
-* command-line reference
-* packaging concepts
-* known limitations
+* **[CLI-REFERENCE.md](CLI-REFERENCE.md)** - Complete command-line reference with detailed option explanations
+* **[CHANGELOG.md](CHANGELOG.md)** - Version history and breaking changes
+* **[LICENSE-FAQ.md](LICENSE-FAQ.md)** - Common licensing questions
 
 The core source code is developed in a separate private repository.
 

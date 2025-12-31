@@ -1,4 +1,4 @@
-- GitHub About/Topics (Tags, Auffindbarkeit)
-- Release Asset Naming Convention
-- CLI Help Text (synced mit README-Ton)
-- kurze CONTRIBUTING.md nur für Issues/Discussions
+- [x] GitHub About/Topics (Tags, Auffindbarkeit)
+- [ ] Release Asset Naming Convention
+- [X] CLI Help Text (synced mit README-Ton)
+- [ ] kurze CONTRIBUTING.md nur für Issues/Discussions
