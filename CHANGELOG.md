@@ -5,7 +5,59 @@ All notable changes to ExeBundle will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.91] - 2025-01-03
+## [0.92] - 2026-01-01
+
+### Breaking Changes
+
+- **Bundle format change**: The internal header structure has been extended from ~136 bytes to ~520 bytes to support new runtime execution features. **Bundles created with v0.91 or earlier will not work with v0.92 loaders, and vice versa.** All bundles must be rebuilt with v0.92.
+
+- **Default command line behavior change**: The bundled application now receives the executable path as `argv[0]` (proper Windows convention), whereas previously `argv[0]` was missing or incorrect. This fixes a long-standing bug but may affect applications that relied on the incorrect behavior.
+
+### Added
+
+- **Custom command line templates** (`--cmdline <template>`): Specify a custom command line for the bundled application with variable substitution support
+  - Supports `{exe}` variable (full path to extracted executable)
+  - Supports `{bundledir}` variable (extraction directory path)
+  - When specified, runtime arguments are completely ignored (replace mode)
+  - Example: `--cmdline "{exe} --preset=production --config {bundledir}\config.ini"`
+
+- **Custom working directory** (`--workdir <template>`): Specify a custom working directory for the bundled application
+  - Supports same `{exe}` and `{bundledir}` variable substitution
+  - Default behavior (no template): working directory is the extraction folder
+  - Example: `--workdir "{bundledir}"`
+
+- **Diagnostic output for templates**: `/exebundle:diag` now displays command line and working directory templates
+
+### Fixed
+
+- **argv[0] now contains executable path**: The default behavior now properly passes the bundled executable's full path as `argv[0]`, fixing compatibility with applications that rely on this standard Windows convention
+
+### Technical Details
+
+- Header struct size: 136 → 520 bytes (adds 256-byte CmdLineTemplate and 128-byte WorkDirTemplate fields)
+- Variable substitution performed at runtime via simple string replacement
+- Template validation enforces length limits (255 chars for cmdline, 127 for workdir)
+
+### Examples
+
+```bash
+# Custom command line with configuration path
+ExeBundle.exe build --exe MyApp.exe --out Bundle.exe --auto \
+  --cmdline "{exe} --config {bundledir}\settings.ini"
+
+# Custom working directory
+ExeBundle.exe build --exe MyApp.exe --out Bundle.exe --auto \
+  --workdir "{bundledir}"
+
+# Both options combined
+ExeBundle.exe build --exe MyApp.exe --out Bundle.exe --auto \
+  --cmdline "{exe} --verbose" \
+  --workdir "{bundledir}"
+```
+
+---
+
+## [0.91] - 2025-12-31
 
 ### Breaking Changes
 

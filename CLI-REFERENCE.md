@@ -16,6 +16,11 @@ ExeBundle.exe build --exe MyApp.exe --files filelist.txt --out MyApp-Bundled.exe
 # Build with manual file selection
 ExeBundle.exe build --exe MyApp.exe --out MyApp-Bundled.exe -- lib1.dll lib2.dll
 
+# Build with custom command line and working directory
+ExeBundle.exe build --exe MyApp.exe --out MyApp-Bundled.exe --auto \
+  --cmdline "{exe} --config {bundledir}\app.cfg" \
+  --workdir "{bundledir}"
+
 # Show license information
 ExeBundle.exe license
 ```
@@ -310,6 +315,86 @@ ExeBundle.exe build --exe App.exe --out Bundle.exe --auto --protect off
 ```
 
 
+### `--cmdline <template>`
+**Custom command line template**
+
+Specifies a custom command line for the bundled application with variable substitution support. When specified, the bundled application receives the template-generated command line and **all runtime arguments are ignored**.
+
+**Variable Substitution**:
+
+| Variable | Expansion | Example |
+|----------|-----------|---------|
+| `{exe}` | Full path to extracted executable | `C:\Users\...\ExeBundle\app-12345678\MyApp.exe` |
+| `{bundledir}` | Extraction directory path | `C:\Users\...\ExeBundle\app-12345678` |
+
+**Default**: When not specified, the default behavior passes the executable path as `argv[0]` followed by any runtime arguments (proper Windows convention).
+
+**Examples**:
+```bash
+# Hardcode application arguments
+ExeBundle.exe build --exe App.exe --out Bundle.exe --auto \
+  --cmdline "{exe} --preset=production"
+
+# Reference configuration file in bundle
+ExeBundle.exe build --exe App.exe --out Bundle.exe --auto \
+  --cmdline "{exe} --config {bundledir}\settings.ini"
+
+# Multiple variables and arguments
+ExeBundle.exe build --exe App.exe --out Bundle.exe --auto \
+  --cmdline "{exe} --verbose --data {bundledir}\data --log {bundledir}\app.log"
+```
+
+**Important Notes**:
+- Template length limited to 255 characters
+- When `--cmdline` is specified, runtime arguments (e.g., `Bundle.exe arg1 arg2`) are **completely ignored**
+- Variables are case-sensitive (`{exe}` works, `{EXE}` does not)
+- Unknown variables (e.g., `{foo}`) are left as-is in the command line
+- No escaping mechanism - literal braces cannot be represented
+
+**Use Cases**:
+- Forcing specific application configuration regardless of how users invoke the bundle
+- Passing extraction directory to applications that need to access bundled assets
+- Pre-configuring command-line applications with default arguments
+
+
+### `--workdir <template>`
+**Custom working directory**
+
+Specifies a custom working directory for the bundled application with variable substitution support. The application's current working directory is set to the expanded template path before execution.
+
+**Variable Substitution**:
+
+Same variables as `--cmdline`: `{exe}` and `{bundledir}`.
+
+**Default**: When not specified, the working directory is set to the extraction folder.
+
+**Examples**:
+```bash
+# Set working directory to extraction folder (same as default)
+ExeBundle.exe build --exe App.exe --out Bundle.exe --auto \
+  --workdir "{bundledir}"
+
+# Set to subdirectory within bundle
+ExeBundle.exe build --exe App.exe --out Bundle.exe --auto \
+  --workdir "{bundledir}\data"
+
+# Use absolute path (advanced)
+ExeBundle.exe build --exe App.exe --out Bundle.exe --auto \
+  --workdir "C:\ProgramData\MyApp"
+```
+
+**Important Notes**:
+- Template length limited to 127 characters
+- Directory must exist when the application starts or process creation will fail
+- Variables are case-sensitive
+- Unknown variables are left as-is
+
+**Use Cases**:
+- Applications that expect to run from a specific directory
+- Setting working directory to a subdirectory containing data files
+- Compatibility with applications that use relative paths for file access
+
+
 ## Runtime Switches
 
 These switches are used when **running the bundled executable**, not when building it.
@@ -325,11 +410,16 @@ MyApp-Bundled.exe /exebundle:diag
 ```
 
 **Output includes**:
+- Extraction strategy (cache/subdir/temp)
+- Extraction directory path
+- Cleanup policy
+- Protection policy
+- Command line template (or "(default)" if not specified)
+- Working directory template (or "(default)" if not specified)
 - Number of bundled files
 - Compressed and expanded sizes
 - Extraction time
 - Compression algorithm used
-- Extraction directory path
 
 
 ### `/exebundle:license`
@@ -414,6 +504,22 @@ ExeBundle.exe build ^
     --extract subdir ^
     --cleanup never
 ```
+
+### Custom Runtime Execution
+Bundle with hardcoded command line and working directory:
+```bash
+ExeBundle.exe build ^
+    --exe MyApp.exe ^
+    --out MyApp-Configured.exe ^
+    --auto ^
+    --cmdline "{exe} --config {bundledir}\app.cfg --verbose" ^
+    --workdir "{bundledir}"
+```
+
+This creates a bundle that:
+- Always runs with `--config {bundledir}\app.cfg --verbose` arguments (runtime args ignored)
+- Sets working directory to the extraction folder
+- Useful for pre-configured portable applications
 
 
 ## Understanding `--auto` Mode
@@ -581,6 +687,13 @@ The bundled executable will match the platform and subsystem of the original.
 - Use `--limits relaxed` for apps with many files
 - Consider selective bundling with `--files` instead of `--auto`
 - Test extraction time with `/exebundle:diag`
+
+### For Custom Execution Control
+- Use `--cmdline` when you need to force specific arguments regardless of how users invoke the bundle
+- Use `--workdir` for applications that require a specific working directory
+- Reference bundled assets with `{bundledir}` in templates (e.g., config files, data directories)
+- Test template expansion with `/exebundle:diag` to verify substitution
+- Keep templates under length limits (255 chars for cmdline, 127 for workdir)
 
 
 ## Getting Help
