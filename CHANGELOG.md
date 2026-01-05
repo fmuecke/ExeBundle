@@ -2,8 +2,59 @@
 
 All notable changes to ExeBundle will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0/0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [0.93] - 2026-01-06
+
+### Added
+
+- **Script bundling support**: Bundle and execute PowerShell, batch, and other script files directly
+  - Non-PE files (scripts, .NET assemblies) can now be specified as `--exe` parameter
+  - Use custom command line templates to specify interpreter (e.g., `--cmdline "powershell -File {exe}"`)
+  - Enables portable script distribution without separate executable wrapper
+  - Example: `ExeBundle.exe build -e script.ps1 -o bundle.exe --cmdline "powershell -ExecutionPolicy Bypass -File {exe}" -- script.ps1 helpers.psm1`
+
+- **Automatic path quoting**: Template variables `{exe}` and `{bundledir}` are now automatically quoted
+  - Handles paths with spaces correctly without manual quoting
+  - `{exe}` expands to `"C:\Program Files\App\app.exe"` (quoted)
+  - Prevents command-line parsing issues
+
+- **Enhanced non-PE file support**: Builder now gracefully handles non-executable files
+  - Warning displayed when non-.exe file is specified
+  - Resource extraction skipped for non-PE files
+  - Default 32-bit console loader used for scripts
+
+### Changed
+
+- **Command line execution model**: `CreateProcessA` now parses full command line instead of fixed executable
+  - Enables arbitrary process execution (e.g., `cmd.exe`, `powershell.exe`)
+  - Template is now the complete command, not just arguments
+  - More flexible than previous implementation
+
+- **Increased template limits**: Command line and working directory templates expanded to 4096 characters (from 255/127)
+  - Supports complex command lines and long paths
+  - Header serialization updated to use `uint16_t` length prefix (max 65535, limited to 4096 for safety)
+
+### Fixed
+
+- **Version info compatibility**: Fixed bundling of executables without version information resources
+  - Builder now adds default version information to loader when source exe has none
+  - Prevents bundle creation failures with certain executables
+
+- **Compression level handling**: Fixed handling of edge-case compression levels
+  - Improved validation and error handling for compression modes
+  - More robust compression configuration
+
+### Performance
+
+- **Builder memory optimization**: Reduced memory footprint during bundle creation
+  - Eliminated intermediate storage vectors in build pipeline
+  - Early deallocation of file entry data after overlay creation
+  - In-place file entry processing instead of creating new vectors
+  - Significant memory savings for large bundles
+
+---
 
 ## [0.92] - 2026-01-01
 

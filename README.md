@@ -44,27 +44,38 @@ This makes ExeBundle especially useful for **portable Windows tools** and
 * Delivering utilities to customers
 * Providing portable diagnostics or helpers
 * **DLL bundling** for Windows applications
+* **Script distribution** - ship PowerShell/batch scripts as standalone executables
 * Running tools in restricted or locked-down environments
 * Simplifying CI/CD delivery pipelines
 * Shipping **portable Windows tools** without installers
+* Distributing automation scripts without requiring interpreter setup
 
 If you want users to **download one file and run it**, ExeBundle fits.
 
 ## Quick Start (30 seconds)
 
-Package a **portable Windows command-line tool** into a single executable:
+**Bundle a Windows executable:**
 
 ```text
 ExeBundle.exe build -e MyApp.exe -o MyApp-Bundled.exe -a
 ```
 
+**Bundle a PowerShell script:**
+
+```text
+ExeBundle.exe build -e script.ps1 -o script-bundled.exe --cmdline "powershell -ExecutionPolicy Bypass -File {exe}" -- script.ps1
+```
+
 Result:
 
-* `MyApp-Bundled.exe`
-* no installer
-* no external files
-* all files/folders in the same folder as MyApp.Exe are automatically included
-* runs on any compatible Windows system
+* Single executable file
+* No installer required
+* No external files needed
+* Runs on any compatible Windows system
+* Scripts execute without separate interpreter installation
+
+_For detailed examples on how to bundle PowerShell, batch, and other scripts directly, see [Script Bundling Guide](CLI-REFERENCE.md#script-bundling-guide)._
+
 
 ## How It Works (High Level)
 
@@ -82,7 +93,7 @@ Result:
 
 * Windows executables and **DLL dependencies**
 * command-line tools
-* scripts (PowerShell, CMD)
+* **scripts (PowerShell, batch, Python)** - bundle scripts for direct execution
 * configuration files
 * assets and resource files like images etc.
 

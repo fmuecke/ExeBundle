@@ -318,16 +318,21 @@ ExeBundle.exe build --exe App.exe --out Bundle.exe --auto --protect off
 ### `--cmdline <template>`
 **Custom command line template**
 
-Specifies a custom command line for the bundled application with variable substitution support. When specified, the bundled application receives the template-generated command line and **all runtime arguments are ignored**.
+Specifies a custom command line with variable substitution. 
+The template defines the complete command to execute, including which process to run.
+
+**Important:** 
+The template specifies the complete command line, including which process to execute.
+  - For bundled executables: Start with `{exe}` (e.g., `"{exe} --arg"`)
+  - For scripts/interpreters: Specify the process explicitly (e.g., `"powershell {exe}"`)
+  - Other runtime arguments are **completely ignored** when using custom templates
 
 **Variable Substitution**:
 
-| Variable | Expansion | Example |
-|----------|-----------|---------|
-| `{exe}` | Full path to extracted executable | `C:\Users\...\ExeBundle\app-12345678\MyApp.exe` |
-| `{bundledir}` | Extraction directory path | `C:\Users\...\ExeBundle\app-12345678` |
-
-**Default**: When not specified, the default behavior passes the executable path as `argv[0]` followed by any runtime arguments (proper Windows convention).
+| Variable      | Expansion                              | Example                  |
+|---------------|----------------------------------------|--------------------------|
+| `{exe}`       | Quoted path to main bundled executable | `"C:\...\cache\app.exe"` |
+| `{bundledir}` | Quoted path to extraction directory    | `"C:\...\cache"`         |
 
 **Examples**:
 ```bash
@@ -342,20 +347,31 @@ ExeBundle.exe build --exe App.exe --out Bundle.exe --auto \
 # Multiple variables and arguments
 ExeBundle.exe build --exe App.exe --out Bundle.exe --auto \
   --cmdline "{exe} --verbose --data {bundledir}\data --log {bundledir}\app.log"
+
+# Bundle PowerShell script with dependencies
+ExeBundle.exe build -e script.ps1 -o bundle.exe --cleanup always \
+    --cmdline "powershell -ExecutionPolicy Bypass {exe}" \
+    -- script.ps1 module.psm1
+  
+# Bundle with subdirectory structure
+  ExeBundle.exe build -e launcher.bat -o bundle.exe \
+    --cmdline "cmd.exe /c {exe}" \
+    -- launcher.bat data\config.json
 ```
 
+**Variable Quoting**:
+  - Variables are automatically quoted to handle spaces in paths
+  - Do not add extra quotes: use {exe}, not "{exe}"  
+
 **Important Notes**:
-- Template length limited to 255 characters
-- When `--cmdline` is specified, runtime arguments (e.g., `Bundle.exe arg1 arg2`) are **completely ignored**
-- Variables are case-sensitive (`{exe}` works, `{EXE}` does not)
-- Unknown variables (e.g., `{foo}`) are left as-is in the command line
-- No escaping mechanism - literal braces cannot be represented
+  - Template length limited to 4096 characters
+  - Variables are case-sensitive (`{exe}` works, `{EXE}` does not)
+  - Unknown variables (e.g., `{foo}`) are left as-is
+  - Templates are fixed at build time - bundle creator controls execution
 
-**Use Cases**:
-- Forcing specific application configuration regardless of how users invoke the bundle
-- Passing extraction directory to applications that need to access bundled assets
-- Pre-configuring command-line applications with default arguments
-
+**Security Note**: 
+Command templates are evaluated at bundle creation time, not runtime. 
+The bundle creator has full control over what executes. Use caution when bundling untrusted scripts.
 
 ### `--workdir <template>`
 **Custom working directory**
@@ -665,6 +681,130 @@ The bundled executable will match the platform and subsystem of the original.
 - Supported: Xpress Huffman, MSZIP (deflate), Zstandard (those may change in the future)
 
 
+## Script Bundling Guide
+
+**New in v0.93:** ExeBundle can now bundle and execute scripts directly without requiring a separate executable wrapper. This enables you to distribute PowerShell, batch, Python, and other scripts as standalone `.exe` files.
+
+### PowerShell Scripts
+
+Bundle PowerShell scripts with their dependencies:
+
+```bash
+# Basic PowerShell script
+ExeBundle.exe build -e script.ps1 -o automation.exe \
+  --cmdline "powershell -ExecutionPolicy Bypass -File {exe}" \
+  -- script.ps1
+
+# With modules and config files
+ExeBundle.exe build -e main.ps1 -o tool.exe \
+  --cmdline "powershell -ExecutionPolicy Bypass -File {exe}" \
+  -- main.ps1 helpers.psm1 config.json data\settings.xml
+```
+
+**Key points:**
+- Use `-ExecutionPolicy Bypass` to avoid execution policy restrictions
+- Use `-File {exe}` to specify the script path
+- `{exe}` is automatically replaced with the extracted script path
+- All dependencies are bundled and extracted together
+
+### Batch Scripts
+
+Bundle batch files with their dependencies:
+
+```bash
+# Basic batch script
+ExeBundle.exe build -e launcher.bat -o tool.exe \
+  --cmdline "cmd.exe /c {exe}" \
+  -- launcher.bat
+
+# With configuration and data files
+ExeBundle.exe build -e setup.bat -o installer.exe \
+  --cmdline "cmd.exe /c {exe}" \
+  -- setup.bat config.ini data\files.txt
+```
+
+**Key points:**
+- Use `cmd.exe /c {exe}` to execute the batch script
+- Batch scripts can reference other bundled files using relative paths
+- Working directory is set to extraction directory by default
+
+### Python Scripts
+
+Bundle Python scripts (requires Python installed on target system):
+
+```bash
+# Python script with libraries
+ExeBundle.exe build -e main.py -o app.exe \
+  --cmdline "python {exe}" \
+  -- main.py lib\helpers.py requirements.txt
+
+# With specific Python version
+ExeBundle.exe build -e app.py -o application.exe \
+  --cmdline "python3 {exe}" \
+  -- app.py modules\utils.py
+```
+
+**Note:** Python must be installed and in PATH on the target system.
+
+### How It Works
+
+1. **Build time:**
+   - You specify a script file as `--exe` (instead of an executable)
+   - ExeBundle detects it's not a PE file and uses a default 32-bit console loader
+   - All dependencies are bundled together
+
+2. **Runtime:**
+   - The loader extracts all files to a local directory
+   - The `--cmdline` template is expanded:
+     - `{exe}` → full path to extracted script (automatically quoted)
+     - `{bundledir}` → extraction directory path (automatically quoted)
+   - The specified interpreter is launched with the expanded command line
+   - Exit code from the script is returned
+
+3. **Variables are automatically quoted:**
+   - `{exe}` becomes `"C:\path\to\script.ps1"` (handles spaces)
+   - No need to manually add quotes in your template
+
+### Common Patterns
+
+**PowerShell with arguments:**
+```bash
+--cmdline "powershell -ExecutionPolicy Bypass -File {exe} -ConfigPath {bundledir}\config.json"
+```
+
+**Batch with environment:**
+```bash
+--cmdline "cmd.exe /c set DATA_DIR={bundledir}\data && {exe}"
+```
+
+**Python with modules in bundledir:**
+```bash
+--cmdline "python {exe}"
+--workdir "{bundledir}"
+```
+
+### Why Bundle Scripts?
+
+- **Single-file distribution:** No "extract first" instructions
+- **Bypass execution policies:** PowerShell scripts run without policy issues
+- **Include dependencies:** Bundle modules, config files, data together
+- **Corporate environments:** Simplify deployment in locked-down systems
+- **Version isolation:** Each bundle carries its exact dependencies
+
+### Limitations
+
+- **Interpreter required:** Target system must have the interpreter installed (PowerShell, Python, etc.)
+- **32-bit loader:** Non-PE files use the 32-bit console loader by default
+- **No PE metadata:** Icons and version info from scripts are not copied (no PE resources to extract)
+
+### Security Considerations
+
+- Templates are fixed at **build time**, not modifiable at runtime
+- Bundle creator controls what executes (already has full control over bundled files)
+- Runtime arguments are **ignored** when using custom `--cmdline`
+- Use `--protect on` to prevent tampering with extracted scripts
+
+
 ## Best Practices
 
 ### For Distribution
@@ -693,7 +833,7 @@ The bundled executable will match the platform and subsystem of the original.
 - Use `--workdir` for applications that require a specific working directory
 - Reference bundled assets with `{bundledir}` in templates (e.g., config files, data directories)
 - Test template expansion with `/exebundle:diag` to verify substitution
-- Keep templates under length limits (255 chars for cmdline, 127 for workdir)
+- Keep templates under length limits (4k chars for cmdline, 4k for workdir)
 
 
 ## Getting Help
