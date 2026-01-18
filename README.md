@@ -57,14 +57,16 @@ If you want users to **download one file and run it**, ExeBundle fits.
 **Bundle a Windows executable:**
 
 ```text
-ExeBundle.exe build -e MyApp.exe -o MyApp-Bundled.exe -a
+ExeBundle.exe -e MyApp.exe -o MyApp-Bundled.exe -a
 ```
 
 **Bundle a PowerShell script:**
 
 ```text
-ExeBundle.exe build -e script.ps1 -o script-bundled.exe --cmdline "powershell -ExecutionPolicy Bypass -File {exe}" -- script.ps1
+ExeBundle.exe -e script.ps1 -o script-bundled.exe --cmdline "powershell -ExecutionPolicy Bypass -File {exe}" --files script.ps1
 ```
+
+_Note: The `build` command is optional and can be omitted (it's the default)._
 
 Result:
 
@@ -82,10 +84,10 @@ _For detailed examples on how to bundle PowerShell, batch, and other scripts dir
 1. You define a main executable and additional files
 2. ExeBundle packages everything into a single `.exe`
 3. At runtime:
-   * files are extracted locally (temp or cache)
+   * files are extracted locally (cache, subdir, or temp)
    * integrity is verified
    * the main executable is launched
-   * the files are cleanup (unless cached)
+   * the files are cleaned up (unless cached)
 4. No global installation is performed
 5. No system state is modified unless your application does so
 

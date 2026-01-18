@@ -5,7 +5,32 @@ All notable changes to ExeBundle will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0/0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.93] - 2026-01-06
+## [0.94] - 2026-01-18
+
+### Breaking Changes
+
+- **CLI option renaming for better Windows compatibility**:
+  - `--` (double dash) renamed to `--files` for specifying manual file lists
+  - `--files` renamed to `--filelist` for reading file list from text file
+  - These changes improve compatibility with Windows command-line conventions where `--` token can be problematic
+
+**Migration guide**:
+
+```bash
+# Before (0.92): Manual file list with --
+ExeBundle.exe build --exe app.exe --out bundle.exe -- lib1.dll lib2.dll data.txt
+
+# After (0.93): Use --files
+ExeBundle.exe --exe app.exe --out bundle.exe --files lib1.dll lib2.dll data.txt
+```
+
+```bash
+# Before (0.92): File list from text file
+ExeBundle.exe build --exe app.exe --out bundle.exe --files filelist.txt
+
+# After (0.93): Use --filelist
+ExeBundle.exe --exe app.exe --out bundle.exe --filelist filelist.txt
+```
 
 ### Added
 
@@ -27,6 +52,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **CLI: `build` command now optional (default)**: The `build` command keyword can be omitted for shorter syntax
+  - `ExeBundle.exe --exe app.exe --out bundle.exe --auto` (new, shorter)
+  - `ExeBundle.exe build --exe app.exe --out bundle.exe --auto` (still works)
+  - Running with no arguments now shows help instead of error
+  - Fully backward compatible - explicit `build` still works
+
 - **Command line execution model**: `CreateProcessA` now parses full command line instead of fixed executable
   - Enables arbitrary process execution (e.g., `cmd.exe`, `powershell.exe`)
   - Template is now the complete command, not just arguments
@@ -35,6 +66,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Increased template limits**: Command line and working directory templates expanded to 4096 characters (from 255/127)
   - Supports complex command lines and long paths
   - Header serialization updated to use `uint16_t` length prefix (max 65535, limited to 4096 for safety)
+
+- **Compression system overhaul**: Simplified and unified compression using Zstandard
+  - All compression modes now use Zstandard (zstd) instead of Windows internal algorithms
+  - Windows Compression API (xpress, xpress_huff, lzms, mszip) disabled due to poor performance
+  - Compression levels: `none`, `fast`, `balanced` (default), `ultra`
+  - Builder now displays compressed size after bundling
 
 ### Fixed
 
@@ -47,6 +84,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - More robust compression configuration
 
 ### Performance
+
+- **Loader size reduced by ~60KB**: Extensive optimizations to minimize bundle overhead
+  - Replaced STL filesystem and chrono with lightweight Windows API wrappers
+  - Disabled unnecessary runtime checks and features
+  - Smaller bundles, faster downloads
 
 - **Builder memory optimization**: Reduced memory footprint during bundle creation
   - Eliminated intermediate storage vectors in build pipeline

@@ -8,16 +8,19 @@
 
 ```bash
 # Build with auto-discovery (recommended for most cases)
-ExeBundle.exe build --exe MyApp.exe --out MyApp-Bundled.exe --auto
+ExeBundle.exe --exe MyApp.exe --out MyApp-Bundled.exe --auto
 
 # Build from file list
-ExeBundle.exe build --exe MyApp.exe --files filelist.txt --out MyApp-Bundled.exe
+ExeBundle.exe --exe MyApp.exe --filelist filelist.txt --out MyApp-Bundled.exe
 
 # Build with manual file selection
-ExeBundle.exe build --exe MyApp.exe --out MyApp-Bundled.exe -- lib1.dll lib2.dll
+ExeBundle.exe --exe MyApp.exe --out MyApp-Bundled.exe --files lib1.dll lib2.dll
+
+# Build with 32-bit loader for smaller bundle size
+ExeBundle.exe --exe MyApp.exe --out MyApp-Bundled.exe --auto --loader x86
 
 # Build with custom command line and working directory
-ExeBundle.exe build --exe MyApp.exe --out MyApp-Bundled.exe --auto \
+ExeBundle.exe --exe MyApp.exe --out MyApp-Bundled.exe --auto \
   --cmdline "{exe} --config {bundledir}\app.cfg" \
   --workdir "{bundledir}"
 
@@ -25,16 +28,20 @@ ExeBundle.exe build --exe MyApp.exe --out MyApp-Bundled.exe --auto \
 ExeBundle.exe license
 ```
 
+_Note: The `build` command is optional and can be omitted (it's the default). All examples work with or without `build` keyword._
+
 
 ## Commands
 
-### `build`
+### `build` (optional, default)
 Create a bundled executable from an application and its dependencies.
 
 **Syntax**:
 ```bash
-ExeBundle.exe build [options]
+ExeBundle.exe [build] [options]
 ```
+
+_Note: The `build` command keyword is optional. If omitted, build mode is assumed by default._
 
 ### `license`
 Display ExeBundle license terms and third-party library licenses (LZ4, Zstandard).
@@ -83,7 +90,7 @@ Automatically discovers and bundles all files in the same directory as the main 
 
 **Example**:
 ```bash
-ExeBundle.exe build --exe MyApp.exe --out Bundled.exe --auto
+ExeBundle.exe --exe MyApp.exe --out Bundled.exe --auto
 ```
 
 **When to use**:
@@ -95,7 +102,7 @@ ExeBundle.exe build --exe MyApp.exe --out Bundled.exe --auto
 Creates a `.log` file named after the output file (e.g., `Bundled.exe.log` for `--out Bundled.exe`) containing the list of all bundled files.
 
 
-#### `--files <path>`
+#### `--filelist <path>`
 **Read file list from text file**
 
 Reads the list of files to bundle from a text file. Each line specifies a file to include, as a path relative to the main executable directory.
@@ -110,10 +117,10 @@ config\settings.ini
 
 **Example**:
 ```bash
-ExeBundle.exe build --exe MyApp.exe --files filelist.txt --out Bundled.exe
+ExeBundle.exe --exe MyApp.exe --filelist filelist.txt --out Bundled.exe
 ```
 
-**Note**: The `--exe` option is required when using `--files`. The file list contains only additional files to bundle (not the exe itself).
+**Note**: The `--exe` option is required when using `--filelist`. The file list contains only additional files to bundle (not the exe itself).
 
 **When to use**:
 - Selective bundling (only specific files)
@@ -121,7 +128,7 @@ ExeBundle.exe build --exe MyApp.exe --files filelist.txt --out Bundled.exe
 - When you need precise control over included files
 
 
-#### `-- <files...>`
+#### `--files <files...>`
 **Manual file list (positional arguments after --)**
 
 Manually specify files to bundle as command-line arguments after the `--` separator.
@@ -130,7 +137,7 @@ Manually specify files to bundle as command-line arguments after the `--` separa
 
 **Example**:
 ```bash
-ExeBundle.exe build --exe MyApp.exe --out Bundled.exe -- lib1.dll lib2.dll config.json
+ExeBundle.exe --exe MyApp.exe --out Bundled.exe --files lib1.dll lib2.dll config.json
 ```
 
 If `MyApp.exe` is located at `C:\MyApp\bin\MyApp.exe`, then `lib1.dll` must be at `C:\MyApp\bin\lib1.dll`.
@@ -147,7 +154,7 @@ If `MyApp.exe` is located at `C:\MyApp\bin\MyApp.exe`, then `lib1.dll` must be a
 
 Specifies the primary executable that will be launched when the bundled executable runs. This executable must be a valid Windows PE file (.exe).
 
-This option is **always required** for all file selection modes (`--auto`, `--files`, or manual `--`).
+This option is **always required** for all file selection modes (`--auto`, `--filelist`, or manual `--`).
 
 **Example**:
 ```bash
@@ -167,24 +174,22 @@ Controls the compression strategy applied to bundled files. Each mode uses a dif
 | Mode | Algorithm | Best For | Compression | Speed |
 |------|-----------|----------|-------------|-------|
 | `none` | No compression | Already compressed files (images, videos) | None | Instant |
-| `fast` | Xpress Huffman | Quick builds, faster extraction | Good | Fast |
-| `balanced` | MSZIP (deflate) | General use (default) | Better | Medium |
-| `ultra` | Zstandard | Smallest bundles, network distribution | Best | Slower |
-
-**Beware that algorithms might change in future versions**
+| `fast` | Zstandard (level 1) | Quick builds, faster extraction | Good | Fast |
+| `balanced` | Zstandard (level 4) | General use (default) | Better | Medium |
+| `ultra` | Zstandard (level 12) | Smallest bundles, network distribution | Best | Slowest |
 
 **Default**: `balanced`
 
 **Examples**:
 ```bash
-# Fastest extraction
-ExeBundle.exe build --exe App.exe --out Bundle.exe --auto --compression fast
+# Fast build, good compression
+ExeBundle.exe --exe App.exe --out Bundle.exe --auto --compression fast
 
 # Smallest bundle size
-ExeBundle.exe build --exe App.exe --out Bundle.exe --auto --compression ultra
+ExeBundle.exe --exe App.exe --out Bundle.exe --auto --compression ultra
 
 # No compression
-ExeBundle.exe build --exe App.exe --out Bundle.exe --auto --compression none
+ExeBundle.exe --exe App.exe --out Bundle.exe --auto --compression none
 ```
 
 **Recommendations**:
@@ -192,6 +197,15 @@ ExeBundle.exe build --exe App.exe --out Bundle.exe --auto --compression none
 - Use `ultra` for network distribution (minimize download size)
 - Use `fast` for frequent testing/iteration cycles
 - Use `none` if files are already compressed (images, videos, archives)
+
+**Benchmark** (FirefoxPortable 146.0.1, 146 files, 323.2 MB):
+
+| Mode | Build Time | Compression | Bundle Size | Extraction |
+|------|------------|-------------|-------------|------------|
+| `none` | 1.2 s | 0% | 323.4 MB | 473 ms |
+| `fast` | 1.6 s | 58.2% | 135.1 MB | 998 ms |
+| `balanced` | 2.4 s | 63.6% | 117.6 MB | 1050 ms |
+| `ultra` | 13.5 s | 66.8% | 107.3 MB | 998 ms |
 
 
 ### Auto-Discovery Limits
@@ -214,10 +228,10 @@ Prevents accidental bundling of excessively large directory trees when using `--
 **Example**:
 ```bash
 # Allow larger bundles
-ExeBundle.exe build --exe App.exe --out Bundle.exe --auto --limits relaxed
+ExeBundle.exe --exe App.exe --out Bundle.exe --auto --limits relaxed
 
 # No limits (controlled environments only)
-ExeBundle.exe build --exe App.exe --out Bundle.exe --auto --limits off
+ExeBundle.exe --exe App.exe --out Bundle.exe --auto --limits off
 ```
 
 **⚠ Warning about `--limits off`**:
@@ -230,6 +244,58 @@ ExeBundle.exe build --exe App.exe --out Bundle.exe --auto --limits off
 - Only applies to `--auto` mode
 - Limits are checked before bundling begins
 - Error message shows actual count/size if limits exceeded
+
+
+### Loader Platform Selection
+
+#### `--loader <platform>`
+**Loader platform selection**
+
+Controls which loader stub (32-bit or 64-bit) is embedded in the bundled executable. The loader is responsible for extracting and launching your application at runtime.
+
+**Values**:
+
+| Platform | Description | Use Case |
+|----------|-------------|----------|
+| `auto` (default) | Match payload bitness | Recommended for most cases |
+| `x86` or `32` | Force 32-bit loader | Smaller bundles (~40KB savings per bundle) |
+| `x64` or `64` | Force 64-bit loader | Better ARM64 performance, native appearance |
+
+**Default**: `auto` (matches the bitness of the `--exe` file)
+
+**Examples**:
+```bash
+# Smaller bundle with 32-bit loader (works perfectly on 64-bit Windows via WoW64)
+ExeBundle.exe --exe MyApp64.exe --out Bundle.exe --auto --loader x86
+
+# Force 64-bit loader for ARM64 optimization
+ExeBundle.exe --exe MyApp32.exe --out Bundle.exe --auto --loader x64
+
+# Use alias format
+ExeBundle.exe --exe MyApp.exe --out Bundle.exe --auto --loader 32
+```
+
+**Technical Details**:
+- **32-bit loaders run perfectly on 64-bit Windows** via WoW64 (Windows-on-Windows-64) emulation
+- **32-bit loaders can launch 64-bit applications** without any limitations
+- **64-bit loaders can launch 32-bit applications** without any limitations
+- Performance difference is negligible (loader is I/O-bound, not CPU-bound)
+- Size difference: ~40KB per bundle (32-bit loaders are smaller)
+
+**When to Use Each**:
+
+| Scenario | Recommended Loader | Reason |
+|----------|-------------------|---------|
+| **Default/Most cases** | `auto` | Smart default, matches expectations |
+| **Distribution/Download** | `x86` | Smaller bundle size for faster downloads |
+| **ARM64 Windows devices** | `x64` | Better performance (avoids double emulation) |
+| **Corporate environments** | `auto` or `x64` | Some IT policies flag 32-bit executables |
+
+**Notes**:
+- WoW64 overhead is ~1-2% and only affects syscalls, not I/O operations
+- The loader's main work is reading files and decompressing data (unaffected by bitness)
+- Task Manager shows the loader's bitness, not the payload's bitness
+- ARM64 Windows: x64 loaders run via emulation, x86 via double emulation (slower)
 
 
 ## Runtime Behavior (Embedded into Bundle)
@@ -248,21 +314,22 @@ Controls where and how files are extracted at runtime.
 | `auto` (default) | Smart selection based on bundle characteristics | Recommended for most cases |
 | `cache` | Extract to user's temp directory with caching (survives runs) | Faster repeated launches |
 | `subdir` | Extract to subdirectory next to executable | Debugging, inspection |
-| `temp` | Extract to unique temp directory (cleaned after run) | Maximum isolation, single-run |
+| `temp` | Extract to unique per-process temp directory (cleaned after run) | Maximum isolation, single-run |
 
 **Default**: `auto`
 
 **Examples**:
 ```bash
 # Enable persistent caching for faster repeated runs
-ExeBundle.exe build --exe App.exe --out Bundle.exe --auto --extract cache
+ExeBundle.exe --exe App.exe --out Bundle.exe --auto --extract cache
 
 # Extract to local subdirectory (useful for debugging)
-ExeBundle.exe build --exe App.exe --out Bundle.exe --auto --extract subdir
+ExeBundle.exe --exe App.exe --out Bundle.exe --auto --extract subdir
 ```
 
 **Cache behavior**:
-- Cache directory: `%TEMP%\dlb-<guid>`
+- Cache directory: `%ProgramData%\ExeBundle\<bundleid>` (admin) or `%LOCALAPPDATA%\ExeBundle\<bundleid>` (user)
+- BundleId derived from bundle content (different versions get separate cache)
 - Survives across runs
 - Files verified for integrity on each run
 - Can be cleared manually by user or with `/exebundle:cleanup` switch
@@ -286,10 +353,10 @@ Controls when extracted files are deleted.
 **Examples**:
 ```bash
 # Force cleanup even in cache mode
-ExeBundle.exe build --exe App.exe --out Bundle.exe --auto --cleanup always
+ExeBundle.exe --exe App.exe --out Bundle.exe --auto --cleanup always
 
 # Leave files for inspection
-ExeBundle.exe build --exe App.exe --out Bundle.exe --auto --cleanup never
+ExeBundle.exe --exe App.exe --out Bundle.exe --auto --cleanup never
 ```
 
 
@@ -311,7 +378,7 @@ Controls write-protection of the extraction directory to prevent tampering.
 **Examples**:
 ```bash
 # Disable protection for apps that modify their files
-ExeBundle.exe build --exe App.exe --out Bundle.exe --auto --protect off
+ExeBundle.exe --exe App.exe --out Bundle.exe --auto --protect off
 ```
 
 
@@ -337,26 +404,26 @@ The template specifies the complete command line, including which process to exe
 **Examples**:
 ```bash
 # Hardcode application arguments
-ExeBundle.exe build --exe App.exe --out Bundle.exe --auto \
+ExeBundle.exe --exe App.exe --out Bundle.exe --auto \
   --cmdline "{exe} --preset=production"
 
 # Reference configuration file in bundle
-ExeBundle.exe build --exe App.exe --out Bundle.exe --auto \
+ExeBundle.exe --exe App.exe --out Bundle.exe --auto \
   --cmdline "{exe} --config {bundledir}\settings.ini"
 
 # Multiple variables and arguments
-ExeBundle.exe build --exe App.exe --out Bundle.exe --auto \
+ExeBundle.exe --exe App.exe --out Bundle.exe --auto \
   --cmdline "{exe} --verbose --data {bundledir}\data --log {bundledir}\app.log"
 
 # Bundle PowerShell script with dependencies
-ExeBundle.exe build -e script.ps1 -o bundle.exe --cleanup always \
+ExeBundle.exe -e script.ps1 -o bundle.exe --cleanup always \
     --cmdline "powershell -ExecutionPolicy Bypass {exe}" \
-    -- script.ps1 module.psm1
-  
+    --files script.ps1 module.psm1
+
 # Bundle with subdirectory structure
-  ExeBundle.exe build -e launcher.bat -o bundle.exe \
+  ExeBundle.exe -e launcher.bat -o bundle.exe \
     --cmdline "cmd.exe /c {exe}" \
-    -- launcher.bat data\config.json
+    --files launcher.bat data\config.json
 ```
 
 **Variable Quoting**:
@@ -387,15 +454,15 @@ Same variables as `--cmdline`: `{exe}` and `{bundledir}`.
 **Examples**:
 ```bash
 # Set working directory to extraction folder (same as default)
-ExeBundle.exe build --exe App.exe --out Bundle.exe --auto \
+ExeBundle.exe --exe App.exe --out Bundle.exe --auto \
   --workdir "{bundledir}"
 
 # Set to subdirectory within bundle
-ExeBundle.exe build --exe App.exe --out Bundle.exe --auto \
+ExeBundle.exe --exe App.exe --out Bundle.exe --auto \
   --workdir "{bundledir}\data"
 
 # Use absolute path (advanced)
-ExeBundle.exe build --exe App.exe --out Bundle.exe --auto \
+ExeBundle.exe --exe App.exe --out Bundle.exe --auto \
   --workdir "C:\ProgramData\MyApp"
 ```
 
@@ -466,13 +533,13 @@ MyApp-Bundled.exe /exebundle:cleanup
 ### Simple Console Application
 Bundle a console app with its DLLs:
 ```bash
-ExeBundle.exe build --exe mytool.exe --out mytool-portable.exe --auto
+ExeBundle.exe --exe mytool.exe --out mytool-portable.exe --auto
 ```
 
 ### GUI Application with Assets
 Bundle a GUI application with maximum compression:
 ```bash
-ExeBundle.exe build ^
+ExeBundle.exe ^
     --exe MyApp.exe ^
     --out MyApp-Portable.exe ^
     --auto ^
@@ -483,16 +550,16 @@ ExeBundle.exe build ^
 ### Selective Bundling
 Bundle only specific files:
 ```bash
-ExeBundle.exe build ^
+ExeBundle.exe ^
     --exe App.exe ^
     --out App-Bundle.exe ^
-    -- lib1.dll lib2.dll assets\icon.png
+    --files lib1.dll lib2.dll assets\icon.png
 ```
 
 ### Fast Build for Testing
 Quick bundle for development iteration:
 ```bash
-ExeBundle.exe build ^
+ExeBundle.exe ^
     --exe Debug\App.exe ^
     --out Test.exe ^
     --auto ^
@@ -502,18 +569,24 @@ ExeBundle.exe build ^
 ### Network Distribution
 Optimize for download size:
 ```bash
-ExeBundle.exe build ^
+ExeBundle.exe ^
     --exe MyApp.exe ^
     --out MyApp-Download.exe ^
     --auto ^
     --compression ultra ^
+    --loader x86 ^
     --extract cache
 ```
+
+This creates the smallest possible bundle by using:
+- Ultra compression for maximum size reduction
+- 32-bit loader (40KB smaller than 64-bit)
+- Cache strategy for instant repeated launches
 
 ### Debugging Bundle
 Bundle with files extracted to visible subdirectory:
 ```bash
-ExeBundle.exe build ^
+ExeBundle.exe ^
     --exe MyApp.exe ^
     --out MyApp-Debug.exe ^
     --auto ^
@@ -524,7 +597,7 @@ ExeBundle.exe build ^
 ### Custom Runtime Execution
 Bundle with hardcoded command line and working directory:
 ```bash
-ExeBundle.exe build ^
+ExeBundle.exe ^
     --exe MyApp.exe ^
     --out MyApp-Configured.exe ^
     --auto ^
@@ -566,7 +639,7 @@ MyApp/
 
 **Command**:
 ```bash
-ExeBundle.exe build --exe MyApp\MyApp.exe --out MyApp-Bundled.exe --auto
+ExeBundle.exe --exe MyApp\MyApp.exe --out MyApp-Bundled.exe --auto
 ```
 
 **Result**: All 7 files bundled (MyApp.exe + 6 other files)
@@ -626,9 +699,9 @@ Directories are indicated by a trailing backslash:
 - You must always specify `--out <bundle.exe>`
 
 **"No input files specified"**
-- You must use one of: `--auto`, `--files <list>`, or `-- <files...>`
+- You must use one of: `--auto`, `--filelist <list>`, or `--files <files...>`
 
-**"Cannot combine --auto with --files"**
+**"Cannot combine --auto with --filelist"**
 - Choose exactly one file selection mode
 
 **"--exe required with --auto"**
@@ -645,16 +718,18 @@ Directories are indicated by a trailing backslash:
 
 ## Platform and Subsystem Detection
 
-ExeBundle automatically detects the target platform and subsystem from the input executable:
+By default (`--loader auto`), ExeBundle automatically detects the target platform and subsystem from the input executable:
 
-| Input Executable | Loader Variant |
-|------------------|----------------|
+| Input Executable | Default Loader Variant |
+|------------------|------------------------|
 | 32-bit GUI | 32-bit GUI loader |
 | 32-bit Console | 32-bit Console loader |
 | 64-bit GUI | 64-bit GUI loader |
 | 64-bit Console | 64-bit Console loader |
 
-The bundled executable will match the platform and subsystem of the original.
+**Override Behavior**: Use `--loader x86` or `--loader x64` to explicitly control the loader bitness regardless of the input executable's platform.
+
+**Note**: The subsystem (GUI vs Console) always matches the input executable and cannot be overridden. Only the platform (32-bit vs 64-bit) can be explicitly controlled via `--loader`.
 
 
 ## Technical Details
@@ -667,9 +742,9 @@ The bundled executable will match the platform and subsystem of the original.
 
 ### Extraction Process
 1. Bundled exe runs
-2. Loader reads embedded data from its own resources (ID "555")
+2. Loader reads overlay data appended to its own PE file
 3. Creates extraction directory (temp, cache, or subdir)
-4. Verifies integrity
+4. Verifies integrity with CRC32
 5. Extracts files with directory structure
 6. Launches main executable with forwarded arguments
 7. Returns exit code from main application
@@ -691,14 +766,14 @@ Bundle PowerShell scripts with their dependencies:
 
 ```bash
 # Basic PowerShell script
-ExeBundle.exe build -e script.ps1 -o automation.exe \
+ExeBundle.exe -e script.ps1 -o automation.exe \
   --cmdline "powershell -ExecutionPolicy Bypass -File {exe}" \
-  -- script.ps1
+  --files script.ps1
 
 # With modules and config files
-ExeBundle.exe build -e main.ps1 -o tool.exe \
+ExeBundle.exe -e main.ps1 -o tool.exe \
   --cmdline "powershell -ExecutionPolicy Bypass -File {exe}" \
-  -- main.ps1 helpers.psm1 config.json data\settings.xml
+  --files main.ps1 helpers.psm1 config.json data\settings.xml
 ```
 
 **Key points:**
@@ -713,14 +788,14 @@ Bundle batch files with their dependencies:
 
 ```bash
 # Basic batch script
-ExeBundle.exe build -e launcher.bat -o tool.exe \
+ExeBundle.exe -e launcher.bat -o tool.exe \
   --cmdline "cmd.exe /c {exe}" \
-  -- launcher.bat
+  --files launcher.bat
 
 # With configuration and data files
-ExeBundle.exe build -e setup.bat -o installer.exe \
+ExeBundle.exe -e setup.bat -o installer.exe \
   --cmdline "cmd.exe /c {exe}" \
-  -- setup.bat config.ini data\files.txt
+  --files setup.bat config.ini data\files.txt
 ```
 
 **Key points:**
@@ -734,14 +809,14 @@ Bundle Python scripts (requires Python installed on target system):
 
 ```bash
 # Python script with libraries
-ExeBundle.exe build -e main.py -o app.exe \
+ExeBundle.exe -e main.py -o app.exe \
   --cmdline "python {exe}" \
-  -- main.py lib\helpers.py requirements.txt
+  --files main.py lib\helpers.py requirements.txt
 
 # With specific Python version
-ExeBundle.exe build -e app.py -o application.exe \
+ExeBundle.exe -e app.py -o application.exe \
   --cmdline "python3 {exe}" \
-  -- app.py modules\utils.py
+  --files app.py modules\utils.py
 ```
 
 **Note:** Python must be installed and in PATH on the target system.
@@ -809,6 +884,7 @@ ExeBundle.exe build -e app.py -o application.exe \
 
 ### For Distribution
 - Use `--compression ultra` to minimize download size
+- Use `--loader x86` for smaller bundles (~40KB savings, works on all Windows)
 - Use `--extract cache` for faster repeated launches
 - Test the bundled executable on a clean system
 - Run with `/exebundle:diag` to verify bundled contents
@@ -825,7 +901,7 @@ ExeBundle.exe build -e app.py -o application.exe \
 
 ### For Large Applications
 - Use `--limits relaxed` for apps with many files
-- Consider selective bundling with `--files` instead of `--auto`
+- Consider selective bundling with `--filelist` instead of `--auto`
 - Test extraction time with `/exebundle:diag`
 
 ### For Custom Execution Control
@@ -842,12 +918,11 @@ ExeBundle.exe build -e app.py -o application.exe \
 # General help
 ExeBundle.exe --help
 
-# Build command help
-ExeBundle.exe build --help
-
 # License information
 ExeBundle.exe license
 ```
+
+_Note: Since `build` is the default command, `ExeBundle.exe --help` shows build options directly._
 
 
 ## See Also
