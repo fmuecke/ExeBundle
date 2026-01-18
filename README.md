@@ -54,6 +54,25 @@ If you want users to **download one file and run it**, ExeBundle fits.
 
 ## Quick Start (30 seconds)
 
+### Installation
+
+**Direct download:** `ExeBundle.exe` (verify with `.sha256`)
+
+**Package managers:**
+```powershell
+# Winget
+winget install fmuecke.ExeBundle
+
+# Scoop
+scoop bucket add fmuecke https://github.com/fmuecke/scoop-bucket
+scoop install exebundle
+
+# Chocolatey
+choco install exebundle
+```
+
+### Create an ExeBundle
+
 **Bundle a Windows executable:**
 
 ```text
