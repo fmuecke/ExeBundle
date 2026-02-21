@@ -1,6 +1,6 @@
 # ExeBundle
-![Chocolatey Version](https://img.shields.io/chocolatey/v/exebundle)
-![WinGet Package Version](https://img.shields.io/winget/v/fmuecke.ExeBundle)
+![Chocolatey Version](https://img.shields.io/chocolatey/v/exebundle?color=green)
+![WinGet Package Version](https://img.shields.io/winget/v/fmuecke.ExeBundle?color=green)
 
 
 **Ship one executable. Nothing else.**
